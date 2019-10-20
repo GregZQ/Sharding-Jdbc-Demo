@@ -1,0 +1,42 @@
+sharding:
+  jdbc:
+    datasource:
+      names: db-test,db-test0,db-test1
+      db-test:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db-test?useUnicode=true&characterEncoding=utf8&tinyInt1isBit=false&useSSL=false&serverTimezone=GMT
+        username: root
+        password:
+      db-test0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db-test0?useUnicode=true&characterEncoding=utf8&tinyInt1isBit=false&useSSL=false&serverTimezone=GMT
+        username: root
+        password:
+      db-test1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db-test1?useUnicode=true&characterEncoding=utf8&tinyInt1isBit=false&useSSL=false&serverTimezone=GMT
+        username: root
+        password:
+    config:
+      sharding:
+        default-database-strategy:
+          standard:
+            precise-algorithm-class-name: DataBaseSharding
+            sharding-column: user_id
+        tables:
+          order:
+            actual-data-nodes: db-test$->{0..1}.order_$->{0..1}
+            table-strategy:
+              inline:
+                sharding-column: user_id
+                algorithm-expression: order_$->{user_id%2}
+          t_order_item:
+            actual-data-nodes: db-test$->{0..1}.order_item_$->{0..1}
+            table-strategy:
+                inline:
+                  sharding-column: user_id
+                  algorithm-expression: order_item_$->{user_id%2}
+
